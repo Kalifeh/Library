@@ -1,14 +1,21 @@
 const myLibrary = [];
 
-function Book(title,year,author,pages){
+function Book(title,year,author,pages,isRead){
     this.title=title;
     this.year=year;
     this.author=author;
     this.pages=pages;
+    this.isRead=isRead;
 }
-function addBookToLibrary(title,year,author,pages){
-    const book= new Book(title,year,author,pages);
+
+Book.prototype.toggleReadStatus= function(){
+    this.isRead = !this.isRead;
+}
+
+function addBookToLibrary(title,year,author,pages,readStatus){
+    const book= new Book(title,year,author,pages,readStatus);
     myLibrary.push(book);
+    return book;
 }
 
 /*Function to add card to the main container*/
@@ -50,6 +57,28 @@ function addCard(book){
     pages.classList.add('pages');
     pages.textContent= book.pages;
 
+    const readStatus=document.createElement('h4');
+    readStatus.classList.add('read-status');
+    readStatus.textContent="Read Status";
+
+    
+    const bookReaded=document.createElement('p');
+    bookReaded.classList.add('readed-book');
+    bookReaded.textContent= book.isRead;
+
+    const toggleReadStatusButton=document.createElement('button');
+    toggleReadStatusButton.classList.add('read-status-button');
+    toggleReadStatusButton.textContent="Toggle Read Status";
+
+    const deleteButton=document.createElement('button');
+    deleteButton.classList.add('delete-button');
+    deleteButton.textContent="Delete Book";
+
+    
+
+    
+
+
     card.appendChild(bookTitle);
     card.appendChild(authorHeader);
     card.appendChild(author);
@@ -57,23 +86,88 @@ function addCard(book){
     card.appendChild(year);
     card.appendChild(pagesHeader);
     card.appendChild(pages);
-
+    card.appendChild(readStatus);
+    card.appendChild(bookReaded);
+    card.appendChild(toggleReadStatusButton);
+    card.appendChild(deleteButton);
     return card;
 }
 
-
-const testBook1=new Book("Harry Potter","2004","JK Rowling","320");
-const testBook2=new Book("Palabras Radiantes","2017","Brandon Sanderson","3450");
-const testBook3=new Book("Palabras Radiantes","2017","Brandon Sanderson","3450");
-myLibrary.push(testBook1);
-myLibrary.push(testBook2);
-myLibrary.push(testBook3);
-
+//Function to show books in the page
 function showBooks(){
     const gridContainer=document.getElementById('grid-container');
+    gridContainer.innerHTML = '';
     for(let step = 0;step<myLibrary.length;step++){
-        gridContainer.appendChild(addCard(myLibrary[step]));
+        gridContainer.appendChild(addCard(myLibrary[step],step));
     }
 }
 
-showBooks();
+//Open the dialog with the form
+const addBookButton= document.querySelector('.add-book');
+const dialog=document.querySelector('.form-dialog');
+
+addBookButton.addEventListener('click',()=>{
+    dialog.showModal();
+})
+
+
+//Add a new element to the page completing the form
+const formEl= document.querySelector("#form-add-book");
+
+formEl.addEventListener("submit",e=>{
+    e.preventDefault();
+    const bookName=document.getElementById("book-name");
+    const author=document.getElementById("author");
+    const year=document.getElementById("year");
+    const pages=document.getElementById("pages");
+    const seleccionado = document.querySelector('input[name="readStatus"]:checked');
+
+    const bookNameValue= bookName.value;
+    const authorValue= author.value;
+    const yearValue= year.value;
+    const pagesValue= pages.value;
+    const bookReadStatus= seleccionado.value;
+    
+    
+    const newBook=addBookToLibrary(bookNameValue,yearValue,authorValue,pagesValue,bookReadStatus);
+
+    const gridContainer=document.getElementById('grid-container');
+    gridContainer.appendChild(addCard(newBook));
+
+    dialog.close();
+    console.log(myLibrary);
+});
+// Contenedor principal donde se añaden los libros
+const gridContainer = document.getElementById('grid-container');
+
+gridContainer.addEventListener("click", (e) => {
+    if(e.target.classList.contains("delete-button")){
+        const card= e.target.closest(".book-card");
+        const index= Array.from(gridContainer.children).indexOf(card);
+
+        if(index > -1){
+            myLibrary.splice(index,1);
+            card.remove();
+        }
+    }
+     // Alternar estado de lectura
+     if (e.target.classList.contains("read-status-button")) {
+        const card = e.target.closest(".book-card");
+        const index = Array.from(gridContainer.children).indexOf(card);
+
+        if (index > -1) {
+            // Alternar estado de lectura en el objeto del libro
+            const book = myLibrary[index];
+            book.toggleReadStatus();
+
+            // Actualizar el texto en el DOM
+            const readStatusText = card.querySelector(".readed-book");
+            readStatusText.textContent = book.isRead ? "Read" : "Not Read";
+        }
+    }
+});
+
+
+
+
+showBooks()

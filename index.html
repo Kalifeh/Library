@@ -8,6 +8,33 @@
 </head>
 <body>
     <h1 class="header">Welcome to <span class="header-name">Kali's</span> Library!</h1>
+    <div class="buttons-container">
+        <button class="add-book button">Add book</button>
+    </div>
+    <dialog class="form-dialog">
+       
+        <form action="" id="form-add-book">
+            <h1 class="dialog-header">Add a book</h1>
+            <label for="book-name">Book Name</label>
+            <input type="text" name="" id="book-name">
+            <label for="author">Author</label>
+            <input type="text" name="" id="author">
+            <label for="year">Year</label>
+            <input type="text" name="" id="year">
+            <label for="pages">Pages</label>
+            <input type="text" name="" id="pages">
+
+            <label for="">Read Status</label>
+            <div class="radio-container">
+                <input type="radio" id="readed" name="readStatus" value="Read">
+                <label for="readed">Readed</label><br>
+                <input type="radio" id="not-readed" name="readStatus" value="Not Read">
+                <label for="not-readed">Not Readed</label><br>
+            </div>
+            <button type="submit" class="add-form-button">Add Book</button>
+        </form>
+       
+    </dialog>
     <div id="grid-container">
 
     </div>
